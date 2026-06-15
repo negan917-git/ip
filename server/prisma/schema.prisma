@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  messages    Message[]
+  bots        TelegramBot[]
+}
+
+model TelegramBot {
+  id          Int      @id @default(autoincrement())
+  botName     String
+  apiToken    String
+  isConnected Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  text        String
+  source      String
+  emotion     String?
+  isComplaint Boolean?
+  category    String?
+  priority    String?
+  summary     String?
+  createdAt   DateTime @default(now())
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+}
